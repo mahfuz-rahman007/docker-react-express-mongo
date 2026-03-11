@@ -1,31 +1,21 @@
-# syntax=docker/dockerfile:1.4
+# backend/Dockerfile
 
-FROM node:lts-buster-slim AS development
+FROM node:lts-buster-slim
 
-# Create app directory
+# Set working directory
 WORKDIR /usr/src/app
 
-COPY package.json /usr/src/app/package.json
-COPY package-lock.json /usr/src/app/package-lock.json
-RUN npm ci
+# Copy dependency manifests
+COPY package.json package-lock.json ./
 
-COPY . /usr/src/app
+# Install just production deps
+RUN npm ci --only=production
 
-EXPOSE 3000
+# Copy app code
+COPY . .
 
-CMD [ "npm", "run", "dev" ]
+# Expose backend port (as defined in your app)
+EXPOSE 5000
 
-FROM development as dev-envs
-RUN <<EOF
-apt-get update
-apt-get install -y --no-install-recommends git
-EOF
-
-RUN <<EOF
-useradd -s /bin/bash -m vscode
-groupadd docker
-usermod -aG docker vscode
-EOF
-# install Docker tools (cli, buildx, compose)
-COPY --from=gloursdocker/docker / /
-CMD [ "npm", "run", "dev" ]
+# Start backend
+CMD ["node", "server.js"]
