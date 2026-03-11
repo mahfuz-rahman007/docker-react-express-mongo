@@ -1,41 +1,21 @@
-# syntax=docker/dockerfile:1.4
+# build stage
+FROM node:18-alpine as build
 
-# Create image based on the official Node image from dockerhub
-FROM node:lts-buster AS development
+WORKDIR /app
 
-# Create app directory
-WORKDIR /usr/src/app
+COPY package*.json ./
+RUN npm install
 
-# Copy dependency definitions
-COPY package.json /usr/src/app
-COPY package-lock.json /usr/src/app
+COPY . .
 
-# Install dependecies
-#RUN npm set progress=false \
-#    && npm config set depth 0 \
-#    && npm i install
-RUN npm ci
+RUN npm run build
 
-# Get all the code needed to run the app
-COPY . /usr/src/app
 
-# Expose the port the app runs in
-EXPOSE 3000
+# production stage
+FROM nginx:alpine
 
-# Serve the app
-CMD ["npm", "start"]
+COPY --from=build /app/build /usr/share/nginx/html
 
-FROM development as dev-envs
-RUN <<EOF
-apt-get update
-apt-get install -y --no-install-recommends git
-EOF
+EXPOSE 80
 
-RUN <<EOF
-useradd -s /bin/bash -m vscode
-groupadd docker
-usermod -aG docker vscode
-EOF
-# install Docker tools (cli, buildx, compose)
-COPY --from=gloursdocker/docker / /
-CMD [ "npm", "start" ]
+CMD ["nginx", "-g", "daemon off;"]
