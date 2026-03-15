@@ -23,6 +23,7 @@ export default class AddTodo extends React.Component {
           required
           minLength={1}
           className="form-control"
+          placeholder="What needs to be done?"
         />
         <button className="btn btn-primary" type="submit">
           Add Todo

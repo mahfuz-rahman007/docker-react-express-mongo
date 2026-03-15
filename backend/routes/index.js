@@ -31,6 +31,36 @@ const routes = (app) => {
       });
   });
 
+  router.delete("/todos/:id", (req, res) => {
+    Todo.findByIdAndDelete(req.params.id)
+      .then((todo) => {
+        if (!todo) {
+          return serverResponses.sendError(res, messages.NOT_FOUND);
+        }
+        serverResponses.sendSuccess(res, messages.SUCCESSFUL_DELETE, todo);
+      })
+      .catch((e) => {
+        serverResponses.sendError(res, messages.BAD_REQUEST, e);
+      });
+  });
+
+  router.put("/todos/:id", (req, res) => {
+    Todo.findByIdAndUpdate(
+      req.params.id,
+      { text: req.body.text },
+      { new: true, runValidators: true }
+    )
+      .then((todo) => {
+        if (!todo) {
+          return serverResponses.sendError(res, messages.NOT_FOUND);
+        }
+        serverResponses.sendSuccess(res, messages.SUCCESSFUL_UPDATE, todo);
+      })
+      .catch((e) => {
+        serverResponses.sendError(res, messages.BAD_REQUEST, e);
+      });
+  });
+
   //it's a prefix before api it is useful when you have many modules and you want to
   //differentiate b/w each module you can use this technique
   app.use("/api", router);
