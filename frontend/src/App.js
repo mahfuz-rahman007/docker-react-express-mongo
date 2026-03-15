@@ -11,11 +11,13 @@ export default class App extends React.Component {
     this.state = {
       todos: [],
     };
+
+    this.api_dom = 'https://mahfuz-api.devjam.party/';
   }
 
   componentDidMount() {
     axios
-      .get("/api")
+      .get(this.api_dom + "/api")
       .then((response) => {
         this.setState({
           todos: response.data.data,
@@ -26,7 +28,7 @@ export default class App extends React.Component {
 
   handleAddTodo = (value) => {
     axios
-      .post("/api/todos", { text: value })
+      .post(this.api_dom + "/api/todos", { text: value })
       .then(() => {
         this.setState({
           todos: [...this.state.todos, { text: value }],

@@ -21,6 +21,7 @@ services:
       - "5000:5000"   # expose backend port for internal Docker networking or Nginx proxy
     environment:
       - NODE_ENV=production
+      - MONGODB_URI=mongodb://mongo:27017/mydb
     restart: always
     networks:
       - express-mongo
