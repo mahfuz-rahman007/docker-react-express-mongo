@@ -12,7 +12,7 @@ export default class App extends React.Component {
       todos: [],
     };
 
-    this.api_dom = 'https://mahfuz-api.devjam.party/';
+    this.api_dom = 'https://mahfuz-api.devjam.party';
   }
 
   componentDidMount() {
